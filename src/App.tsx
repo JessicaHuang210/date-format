@@ -1,20 +1,46 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "./App.css";
 import {
   formateDate,
   formatDateToTemplate,
   formatUTCTimestampToTemplate,
 } from "./utils";
+import { Copy, Check, RefreshCcw } from "lucide-react";
 
 function App() {
   const [activeTab, setActiveTab] = useState("tab1");
   const [timestamp, setTimestamp] = useState(new Date().getTime());
   const [date, setDate] = useState(formateDate(new Date()));
+  const [showToast, setShowToast] = useState(false);
   const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
   const offsetMinutes = new Date().getTimezoneOffset() / 60;
 
+  const handleCopy = (text: string) => {
+    navigator.clipboard.writeText(text);
+    setShowToast(true);
+  };
+
+  useEffect(() => {
+    if (showToast) {
+      const timer = setTimeout(() => {
+        setShowToast(false);
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [showToast]);
+
   return (
     <div className="p-5 md:p-10">
+      <div
+        className={`fixed top-4 right-4 z-50 transition-all duration-500 ease-in-out ${
+          showToast ? "translate-x-0 opacity-100" : "translate-x-full opacity-0"
+        }`}
+      >
+        <div className="alert alert-success shadow-lg">
+          <Check className="w-4 h-4" />
+          <span>複製成功！</span>
+        </div>
+      </div>
       <h1 className="text-2xl md:text-3xl font-bold mb-1">
         Date Format{" "}
         <div className="badge badge-soft badge-info text-sm md:text-base">
@@ -55,6 +81,7 @@ function App() {
                   setTimestamp(new Date().getTime());
                 }}
               >
+                <RefreshCcw className="w-3.5 h-3.5" />
                 NOW
               </button>
             </div>
@@ -79,7 +106,17 @@ function App() {
                     </div>
                   </th>
                   <th>ISO String</th>
-                  <td>{new Date(timestamp).toISOString()}</td>
+                  <td>
+                    {new Date(timestamp).toISOString()}
+                    <button
+                      className="btn btn-xs ml-2"
+                      onClick={() => {
+                        handleCopy(new Date(timestamp).toISOString());
+                      }}
+                    >
+                      <Copy className="w-3.5 h-3.5 text-gray-500" />
+                    </button>
+                  </td>
                 </tr>
                 <tr>
                   <th>
@@ -88,7 +125,17 @@ function App() {
                     </div>
                   </th>
                   <th>UTC Time</th>
-                  <td>{new Date(timestamp).toUTCString()}</td>
+                  <td>
+                    {new Date(timestamp).toUTCString()}
+                    <button
+                      className="btn btn-xs ml-2"
+                      onClick={() => {
+                        handleCopy(new Date(timestamp).toUTCString());
+                      }}
+                    >
+                      <Copy className="w-3.5 h-3.5 text-gray-500" />
+                    </button>
+                  </td>
                 </tr>
               </tbody>
             </table>
@@ -113,6 +160,19 @@ function App() {
                       <th>YYYY-MM-DD</th>
                       <td>
                         {formatUTCTimestampToTemplate(timestamp, "YYYY-MM-DD")}
+                        <button
+                          className="btn btn-xs ml-2"
+                          onClick={() => {
+                            handleCopy(
+                              formatUTCTimestampToTemplate(
+                                timestamp,
+                                "YYYY-MM-DD"
+                              )
+                            );
+                          }}
+                        >
+                          <Copy className="w-3.5 h-3.5 text-gray-500" />
+                        </button>
                       </td>
                     </tr>
                     <tr>
@@ -124,6 +184,19 @@ function App() {
                       <th>HH:MM:SS</th>
                       <td>
                         {formatUTCTimestampToTemplate(timestamp, "HH:mm:ss")}
+                        <button
+                          className="btn btn-xs ml-2"
+                          onClick={() => {
+                            handleCopy(
+                              formatUTCTimestampToTemplate(
+                                timestamp,
+                                "HH:mm:ss"
+                              )
+                            );
+                          }}
+                        >
+                          <Copy className="w-3.5 h-3.5 text-gray-500" />
+                        </button>
                       </td>
                     </tr>
                     <tr>
@@ -209,12 +282,38 @@ function App() {
                             day: "2-digit",
                           })
                           .replace(/\//g, "-")}
+                        <button
+                          className="btn btn-xs ml-2"
+                          onClick={() => {
+                            handleCopy(
+                              new Date(timestamp)
+                                .toLocaleDateString("zh-TW", {
+                                  year: "numeric",
+                                  month: "2-digit",
+                                  day: "2-digit",
+                                })
+                                .replace(/\//g, "-")
+                            );
+                          }}
+                        >
+                          <Copy className="w-3.5 h-3.5 text-gray-500" />
+                        </button>
                       </td>
                     </tr>
                     <tr>
                       <th></th>
                       <th>HH:MM:SS</th>
-                      <td>{new Date(timestamp).toTimeString()}</td>
+                      <td>
+                        {new Date(timestamp).toTimeString()}
+                        <button
+                          className="btn btn-xs ml-2"
+                          onClick={() => {
+                            handleCopy(new Date(timestamp).toTimeString());
+                          }}
+                        >
+                          <Copy className="w-3.5 h-3.5 text-gray-500" />
+                        </button>
+                      </td>
                     </tr>
                     <tr>
                       <th></th>
@@ -284,6 +383,7 @@ function App() {
                   setDate(formateDate(new Date()));
                 }}
               >
+                <RefreshCcw className="w-3.5 h-3.5" />
                 NOW
               </button>
             </div>
@@ -299,7 +399,17 @@ function App() {
                 <tr>
                   <th></th>
                   <th>Timestamp</th>
-                  <td>{new Date(date).getTime()}</td>
+                  <td>
+                    {new Date(date).getTime()}
+                    <button
+                      className="btn btn-xs ml-2"
+                      onClick={() => {
+                        handleCopy(new Date(date).getTime().toString());
+                      }}
+                    >
+                      <Copy className="w-3.5 h-3.5 text-gray-500" />
+                    </button>
+                  </td>
                 </tr>
                 <tr>
                   <th></th>
@@ -313,7 +423,17 @@ function App() {
                     </div>
                   </th>
                   <th>ISO String</th>
-                  <td>{new Date(date).toISOString()}</td>
+                  <td>
+                    {new Date(date).toISOString()}
+                    <button
+                      className="btn btn-xs ml-2"
+                      onClick={() => {
+                        handleCopy(new Date(date).toISOString());
+                      }}
+                    >
+                      <Copy className="w-3.5 h-3.5 text-gray-500" />
+                    </button>
+                  </td>
                 </tr>
                 <tr>
                   <th>
@@ -322,7 +442,17 @@ function App() {
                     </div>
                   </th>
                   <th>UTC Time</th>
-                  <td>{new Date(date).toUTCString()}</td>
+                  <td>
+                    {new Date(date).toUTCString()}
+                    <button
+                      className="btn btn-xs ml-2"
+                      onClick={() => {
+                        handleCopy(new Date(date).toUTCString());
+                      }}
+                    >
+                      <Copy className="w-3.5 h-3.5 text-gray-500" />
+                    </button>
+                  </td>
                 </tr>
               </tbody>
             </table>
@@ -351,6 +481,20 @@ function App() {
                           "YYYY-MM-DD",
                           true
                         )}
+                        <button
+                          className="btn btn-xs ml-2"
+                          onClick={() => {
+                            handleCopy(
+                              formatDateToTemplate(
+                                new Date(date),
+                                "YYYY-MM-DD",
+                                true
+                              )
+                            );
+                          }}
+                        >
+                          <Copy className="w-3.5 h-3.5 text-gray-500" />
+                        </button>
                       </td>
                     </tr>
                     <tr>
@@ -362,6 +506,20 @@ function App() {
                       <th>HH:MM:SS</th>
                       <td>
                         {formatDateToTemplate(new Date(date), "HH:mm:ss", true)}
+                        <button
+                          className="btn btn-xs ml-2"
+                          onClick={() => {
+                            handleCopy(
+                              formatDateToTemplate(
+                                new Date(date),
+                                "HH:mm:ss",
+                                true
+                              )
+                            );
+                          }}
+                        >
+                          <Copy className="w-3.5 h-3.5 text-gray-500" />
+                        </button>
                       </td>
                     </tr>
                     <tr>
@@ -441,6 +599,16 @@ function App() {
                       <th>YYYY-MM-DD</th>
                       <td>
                         {formatDateToTemplate(new Date(date), "YYYY-MM-DD")}
+                        <button
+                          className="btn btn-xs ml-2"
+                          onClick={() => {
+                            handleCopy(
+                              formatDateToTemplate(new Date(date), "YYYY-MM-DD")
+                            );
+                          }}
+                        >
+                          <Copy className="w-3.5 h-3.5 text-gray-500" />
+                        </button>
                       </td>
                     </tr>
                     <tr>
@@ -448,6 +616,16 @@ function App() {
                       <th>HH:MM:SS</th>
                       <td>
                         {formatDateToTemplate(new Date(date), "HH:mm:ss")}
+                        <button
+                          className="btn btn-xs ml-2"
+                          onClick={() => {
+                            handleCopy(
+                              formatDateToTemplate(new Date(date), "HH:mm:ss")
+                            );
+                          }}
+                        >
+                          <Copy className="w-3.5 h-3.5 text-gray-500" />
+                        </button>
                       </td>
                     </tr>
                     <tr>
