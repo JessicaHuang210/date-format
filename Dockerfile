@@ -16,11 +16,8 @@ COPY . .
 # 建置應用程式
 RUN yarn build
 
-# 安裝 serve 來服務靜態檔案
-RUN yarn global add serve
-
 # 暴露 port 8080 (Cloud Run 預設)
 EXPOSE 8080
 
-# 使用 serve 來服務建置好的檔案
-CMD ["serve", "-s", "dist", "-l", "8080"] 
+# 啟動 Next.js 應用程式
+CMD ["yarn", "start"] 

@@ -28,4 +28,4 @@ export const formatDateToTemplate = (date: Date, template: string="YYYY-MM-DD HH
   const minute = isUTC ? date.getUTCMinutes().toString().padStart(2, "0") : date.getMinutes().toString().padStart(2, "0");
   const second = isUTC ? date.getUTCSeconds().toString().padStart(2, "0") : date.getSeconds().toString().padStart(2, "0");
   return template.replace("YYYY", year.toString()).replace("MM", month).replace("DD", day).replace("HH", hour).replace("mm", minute).replace("ss", second);
-};
+}; 

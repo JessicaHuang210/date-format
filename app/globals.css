@@ -2,7 +2,3 @@
 @plugin "daisyui" {
   themes: dracula --default;
 }
-
-table {
-  letter-spacing: 0.1em;
-}

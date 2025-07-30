@@ -1,19 +1,26 @@
+"use client";
+
 import { useState, useEffect } from "react";
-import "./App.css";
 import {
   formateDate,
   formatDateToTemplate,
   formatUTCTimestampToTemplate,
-} from "./utils";
+} from "@/lib/utils";
 import { Copy, Check, RefreshCcw } from "lucide-react";
 
-function App() {
+export default function ClientDateFormatApp() {
   const [activeTab, setActiveTab] = useState("tab1");
-  const [timestamp, setTimestamp] = useState(new Date().getTime());
-  const [date, setDate] = useState(formateDate(new Date()));
+  const [timestamp, setTimestamp] = useState(0);
+  const [date, setDate] = useState("");
   const [showToast, setShowToast] = useState(false);
-  const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-  const offsetMinutes = new Date().getTimezoneOffset() / 60;
+  const [mounted, setMounted] = useState(false);
+
+  // 在客戶端設置初始值
+  useEffect(() => {
+    setMounted(true);
+    setTimestamp(new Date().getTime());
+    setDate(formateDate(new Date()));
+  }, []);
 
   const handleCopy = (text: string) => {
     navigator.clipboard.writeText(text);
@@ -29,8 +36,17 @@ function App() {
     }
   }, [showToast]);
 
+  // 如果還沒掛載，顯示加載狀態
+  if (!mounted) {
+    return (
+      <div className="flex items-center justify-center h-32">
+        <span className="loading loading-spinner loading-lg"></span>
+      </div>
+    );
+  }
+
   return (
-    <div className="p-5 md:p-10">
+    <>
       <div
         className={`fixed top-4 right-4 z-50 transition-all duration-500 ease-in-out ${
           showToast ? "translate-x-0 opacity-100" : "translate-x-full opacity-0"
@@ -41,18 +57,7 @@ function App() {
           <span>複製成功！</span>
         </div>
       </div>
-      <h1 className="text-2xl md:text-3xl font-bold mb-1">
-        Date Format{" "}
-        <div className="badge badge-soft badge-info text-sm md:text-base">
-          {timeZone} ({offsetMinutes < 0 ? "+" : "-"}
-          {Math.abs(offsetMinutes)}:00)
-        </div>
-      </h1>
 
-      <p className="text-gray-500 text-sm md:text-base mb-5">
-        This is a simple date format tool that allows you to format dates in
-        different ways.
-      </p>
       <div role="tablist" className="tabs tabs-box">
         <a
           role="tab"
@@ -545,7 +550,7 @@ function App() {
                         </span>
                       </td>
                     </tr>
-                    <tr>
+                    <tr className="bg-base-200">
                       <th>
                         <div className="badge badge-soft badge-primary badge-xs">
                           UTC
@@ -554,7 +559,7 @@ function App() {
                       <th>getUTCDate</th>
                       <td>{new Date(date).getUTCDate()}</td>
                     </tr>
-                    <tr>
+                    <tr className="bg-base-200">
                       <th>
                         <div className="badge badge-soft badge-primary badge-xs">
                           UTC
@@ -643,12 +648,12 @@ function App() {
                         </span>
                       </td>
                     </tr>
-                    <tr>
+                    <tr className="bg-base-200">
                       <th></th>
                       <th>getDate</th>
                       <td>{new Date(date).getDate()}</td>
                     </tr>
-                    <tr>
+                    <tr className="bg-base-200">
                       <th></th>
                       <th>getHours</th>
                       <td>{new Date(date).getHours()}</td>
@@ -670,8 +675,6 @@ function App() {
           </div>
         )}
       </div>
-    </div>
+    </>
   );
 }
-
-export default App;
